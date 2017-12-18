@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Android - Third Party Libraries</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+		<style>
+		.reveal section img { background:none; border:none; box-shadow:none; }
+		</style>
+	</head>
+
+	<body>
+
+		<div class="reveal" style="background: #222;background-color: #222;">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Android</h1>
+					<h3>Third party libraries</h3>
+					<p>
+						<small>Created by <a target="blank" href="https://github.com/garcegon">Gonzalo</a></small>
+					</p>
+				</section>
+
+				<section>
+					<section>
+						<h2>We'll see...</h2>
+						<ul style="display: block;text-align: left;">
+							<li>Production libraries</li>
+							<li>Development libraries</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Production libraries</h2>
+						<ul style="display: block;text-align: left;">
+							<li>Butterknife</li>
+							<li>Retrofit</li>
+							<li>Dagger 2</li>
+							<li>Picasso</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Development libraries</h2>
+						<ul style="display: block;text-align: left;">
+							<li>Stetho</li>
+							<li>LeakCanary</li>
+						</ul>
+					</section>
+				</section>
+
+				<!-- Example of nested vertical slides -->
+				<section>
+					<section>
+						<h2>Butterknife</h2>
+						<a target="blank" href="http://jakewharton.github.io/butterknife/"><img data-src="http://jakewharton.github.io/butterknife/static/logo.png" alt="Butterknife" /></a>
+					</section>
+					<section>
+						<h2>Butterknife</h2>
+						<p>Jake Wharton (Google) under Apache License 2.0 </p>
+						<p>Bind Android views and callbacks to fields and methods using Java anotations</p>
+					</section>
+					<section>
+						<h2>Without Butterknife</h2>
+  						<pre><code data-trim data-noescape>
+public class MainActivity extends AppCompatActivity {
+
+    TextView tvMain;
+    Button btnMain;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        this.tvMain = (TextView) findViewById(R.id.tv_main);
+        this.btnMain = (Button) findViewById(R.id.btn_main);
+        
+        this.tvMain.setText(R.string.app_name);
+    }
+}
+  						</code></pre>
+					</section>
+					<section>
+						<h2>With Butterknife</h2>
+  						<pre><code data-trim data-noescape>
+public class MainActivity extends AppCompatActivity {
+
+    @BindView(R.id.tv_main) TextView tvMain;
+    @BindView(R.id.btn_main) Button btnMain;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        <mark>ButterKnife.bind(this);</mark>
+
+        this.tvMain.setText(R.string.app_name);
+    }
+}
+  						</code></pre>
+					</section>
+					<section>
+						<h2>Not just views...</h2>
+  						<pre><code data-trim data-noescape>
+@BindView(R.id.tv_main) TextView tvMain;
+@BindView(R.id.btn_main) Button btnMain;
+@BindColor(R.color.colorAccent) int accentColor;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    ButterKnife.bind(this);
+
+    this.btnMain.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            tvMain.setText("Clicked!");
+        }
+    });
+}
+
+@OnClick(R.id.btn_main)
+public void clickMain() {
+    tvMain.setText("Clicked!");
+}
+  						</code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Retrofit</h2>
+						<a target="blank" href="http://square.github.io/retrofit/"><img data-src="https://avatars0.githubusercontent.com/u/82592" alt="Square" /></a>
+					</section>
+					<section>
+						<h2>Retrofit</h2>
+						<p>Square, Inc. under Apache License 2.0 </p>
+						<p>Use annotations to describe the HTTP request</p>
+						<ul>
+							<li>URL parameter replacement</li>
+							<li>Request body conversion (JSON...)</li>
+							<li>Multipart request body and file upload</li>
+						</ul>
+					</section>
+					<section>
+						<p>Define Java interface</p>
+  						<pre><code class="java" data-trim>
+public interface PlayService {
+
+    @GET("game/{topicId}")
+    Observable&lt;Game> getGame(@Path("topicId") long topicId, @Query("level") int level, @Query("eLevel") int englishLevel);
+}
+						</code></pre>
+						<p>topidId = 2, level = 0 and englishLevel = 0</p>
+  						<pre><code data-trim data-noescape>
+  						http://server.com/game/2?level=0&eLevel=0
+						</code></pre>
+					</section>
+					<section>
+						<p>Create Retrofit service</p>
+  						<pre><code class="java" data-trim>
+Retrofit retrofit = new Retrofit.Builder()
+        .baseUrl(ENDPOINT)
+        .client(okHttpClient)
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create(
+                new GsonBuilder().setDateFormat(Constants.DATE_FORMAT).create()))
+        .build();
+
+PlayService service = retrofit.create(PlayService.class);
+						</code></pre>
+						<p>Call endpoint</p>
+  						<pre><code class="java" data-trim>
+service.getGame(2 /*topicId*/, 0 /*level*/, 0 /*englishLevel*/)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(this::gameResponse, this::onError);
+						</code></pre>
+					</section>
+					<section>
+						<p>Manage response</p>
+  						<pre><code class="java" data-trim>
+private void gameResponse(Game game) {
+    //Receive game object
+    if(game == null)
+        return;
+
+    //Play with Game!
+}
+						</code></pre>
+						<p>Manage error</p>
+  						<pre><code class="java" data-trim>
+private void onError(Throwable throwable) {
+    if (throwable instanceof HttpException) {
+        // We had non-2XX http error
+        HttpException httpError = (HttpException) throwable;
+        Toast.makeText(context, httpError.message(), Toast.LENGTH_SHORT).show();
+    }
+    else if (throwable instanceof IOException) {
+        // A network or conversion error happened
+        Toast.makeText(context, "There was a network issue. Please try again later.", Toast.LENGTH_SHORT).show();
+    }
+    else {
+        // We don't know what happened
+        Toast.makeText(context, "Unexpected error. Please try again later.", Toast.LENGTH_SHORT).show();
+    }
+}
+						</code></pre>
+					</section>
+					<section>
+						<p>File example (I)</p>
+  						<pre><code class="Java">
+public interface FileService {
+    @Streaming
+    @GET
+    Call&lt;ResponseBody> downloadFile(@Url String fileUrl);
+}
+						</code></pre>
+						<p>Treat the response body on methods returning Response as is = without converting body() to byte[].</p>
+					</section>
+					<section>
+						<p>File example (II) </p>
+  						<pre><code class="java" data-trim>
+public void downloadFile(String url, String name, FileManagerListener listener) {
+    Call&lt;ResponseBody> call = fileService.downloadFile(url);
+    call.enqueue(new Callback&lt;ResponseBody>() {
+        @Override
+        public void onResponse(Call&lt;ResponseBody> call, Response&lt;ResponseBody> response) {
+            if (response.isSuccessful()) {
+                Log.d(TAG, "Server contacted and has file: "+url);
+
+                new AsyncTask&lt;Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        boolean writtenToDisk = writeResponseBodyToDisk(response.body(), name);
+
+                        Log.d(TAG, "File download was a success? " + writtenToDisk);
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        listener.onDownloadFinish(true);
+                    }
+
+                }.execute();
+            }
+            else {
+                Log.d(TAG, "Server contact failed: "+url);
+            }
+        }
+
+        @Override
+        public void onFailure(Call&lt;ResponseBody> call, Throwable t) {
+            Log.e(TAG, "error");
+            listener.onDownloadFinish(false);
+        }
+    });
+}
+						</code></pre>
+						<small><a target="blank" href="https://futurestud.io/tutorials/retrofit-2-how-to-download-files-from-server">Source ref.</a></small>
+						<p>Asynchronously send the request and notify callback.</p>
+					</section>
+					<section>
+						<p>More annotations...</p>
+  						<pre><code class="java" data-trim>
+// Other HTTP Requests
+@POST("user/edit")
+@PUT("user/photo")
+
+// Simple and multiple headers
+@Headers("Cache-Control: max-age=640000")
+@Headers({
+    "Accept: application/vnd.github.v3.full+json",
+    "User-Agent: Retrofit-Sample-App"
+})
+						</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2><a target="blank" href="https://google.github.io/dagger/">Dagger 2</a></h2>
+					</section>
+					<section>
+						<h2>Dagger 2</h2>
+						<p>Adaptation of Dagger (Square) and now maintained by Google</p>
+						<p>Fully static, compile-time dependency injection framework for Java and Android</p>
+					</section>
+					<section>
+						<h2>Declaring Dependencies</h2>
+  						<pre><code class="java" data-trim>
+public class LoadGamePresenter extends BasePresenter&lt;BaseView> {
+	private PlayService service;
+
+	@Inject
+	LoadGamePresenter(PlayService service) {
+	    this.service = service;
+	}
+}
+						</code></pre>
+					</section>
+					<section>
+						<h2>Satisfying Dependencies</h2>
+  						<pre><code class="java" data-trim>
+@Module
+public class AppModule {
+    @Provides
+    PlayService providePlayService() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .client(new OkHttpClient())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(
+                        new GsonBuilder().setDateFormat(Constants.DATE_FORMAT).create()))
+                .build();
+
+        return retrofit.create(PlayService.class);
+    }
+}
+						</code></pre>
+						<p>You can use <code>@Singleton</code></p>
+					</section>
+					<section>
+						<h2>Generating component</h2>
+  						<pre><code class="java" data-trim>
+@Singleton
+@Component(modules = AppModule.class)
+public interface AppComponent {
+    LoadGamePresenter createLoadGamePresenter();
+}
+						</code></pre>
+  						<pre><code class="java" data-trim>
+public class App extends Application {
+
+    private AppComponent component;
+
+    protected AppComponent createComponent() {
+        return DaggerAppComponent.builder()
+                .appModule(new AppModule(this))
+                .build();
+    }
+
+    public static AppComponent getAppComponent(Context context) {
+        App app = (App) context.getApplicationContext();
+        if (app.component == null) {
+            app.component = app.createComponent();
+        }
+        return app.component;
+    }
+}
+						</code></pre>
+					</section>
+					<section>
+						<h2>Injection in action</h2>
+						<p>Get Application reference and call Component injector</p>
+  						<pre><code class="java" data-trim>
+
+public class LoadGameFragment extends BaseFragment&lt;BaseView, LoadGamePresenter> implements BaseView{
+
+    public LoadGameFragment() {
+
+    }
+
+    @Override
+    protected LoadGamePresenter createPresenter() {
+        return App.getAppComponent(getContext()).createLoadGamePresenter();
+    }
+}
+						</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2><a target="blank" href="http://square.github.io/picasso/">Picasso</a></h2>
+					</section>
+					<section>
+						<h2>Picasso</h2>
+						<p>Square, Inc. under Apache License 2.0 </p>
+						<p>A powerful image downloading and caching library</p>
+						<ul>
+							<li>ImageView recycling and in adapters</li>
+							<li>Image transformations with low memory use</li>
+							<li>Automatic memory and disk caching</li>
+						</ul>
+					</section>
+					<section>
+						<p>So simple as</p>
+  						<pre><code  data-trim>
+Picasso.with(context)
+    .load(url)
+    .resize(50, 50)
+    .centerCrop()
+    .placeholder(R.drawable.user_placeholder)
+    .error(R.drawable.user_placeholder_error)
+    .into(imageView);
+						</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2><a target="blank" href="http://facebook.github.io/stetho/">Stetho</a></h2>
+					</section>
+					<section>
+						<h2>Stetho</h2>
+						<p>Facebok, BSD-licensed</p>
+						<p>A debug bridge for Android applications</p>
+						<ul>
+							<li>Network Inspection</li>
+							<li>Database Inspection</li>
+							<li>View Hierarchy</li>
+							<li>And more... just with Chrome!</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Init in App creation</h2>
+  						<pre><code class="java" data-trim>
+
+public class App extends Application {
+
+    public void onCreate() {
+        super.onCreate();
+
+        //Debug chrome
+        Stetho.initializeWithDefaults(this);
+    }
+}
+						</code></pre>
+						<p>And start inspecting!</p>
+					</section>
+					<section>
+						<h2>Chrome inspection</h2>
+						<p>Navigate: chrome://inspect</p>
+						<p><img data-src="img/db1.jpg"></p>
+						<p><img data-src="img/db2.jpg"></p>
+					</section>
+					<section>
+						<h2>Network inspection</h2>
+  						<pre><code class="java" data-trim>
+@Module
+public class AppModule {
+    @Provides
+    PlayService providePlayService() {
+	OkHttpClient okHttpClient = new OkHttpClient.Builder()
+	    .addNetworkInterceptor(new StethoInterceptor())
+	    .build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .client(okHttpClient)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(
+                        new GsonBuilder().setDateFormat(Constants.DATE_FORMAT).create()))
+                .build();
+
+        return retrofit.create(PlayService.class);
+    }
+}
+						</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>LeakCanary</h2>
+						<a target="blank" href="http://square.github.io/picasso/"><img data-src="https://raw.githubusercontent.com/square/leakcanary/master/assets/icon_512.png"></a>
+					</section>
+					<section>
+						<h2>LeakCanary</h2>
+						<p>Square, Inc. under Apache License 2.0 </p>
+						<p>A memory leak detection library for Android and Java</p>
+					</section>
+					<section>
+						<h2>Init in App creation</h2>
+  						<pre><code class="java" data-trim>
+
+public class App extends Application {
+
+    public void onCreate() {
+        super.onCreate();
+
+        //Debug memory
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this);
+    }
+}
+						</code></pre>
+						<p>And start crying!</p>
+					</section>
+					<section>
+						<p>LeakCanary will automatically show a notification when an activity memory leak is detected</p>
+						<p>A LeakCanary App installed will be installed to see memory leaks</p>
+						<img data-src="img/leak1.jpg">
+						<img data-src="https://cdn-images-1.medium.com/max/800/0*5zhG12WlfCp1nIlc.png">
+					</section>
+				</section>
+
+				<section data-background="https://i.giphy.com/media/mR3dXKpI6P8CA/giphy.webp">
+					<h2></h2>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/search/search.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
